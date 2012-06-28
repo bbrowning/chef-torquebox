@@ -1,6 +1,7 @@
 include_recipe 'java'
 
-version = node[:torquebox][:version]
+torquebox = node[:torquebox]
+version = torquebox[:version]
 prefix = "/opt/torquebox-#{version}"
 current = "/opt/torquebox-current"
 
@@ -19,11 +20,11 @@ user "torquebox" do
 end
 
 install_from_release('torquebox') do
-  release_url   node[:torquebox][:url]
+  release_url   torquebox[:url]
   home_dir      prefix
   action        [:install, :install_binaries]
   version       version
-  checksum      node[:torquebox][:checksum]
+  checksum      torquebox[:checksum]
   not_if{ File.exists?(prefix) }
 end
 
@@ -50,13 +51,22 @@ execute "torquebox-upstart" do
   })
 end
 
+# Allow bind_ip entries like ["cloud", "local_ipv4"]
+if torquebox[:bind_ip].is_a?(Array)
+  torquebox[:bind_ip] = torquebox[:bind_ip].inject(node) do |hash, key|
+    hash[key]
+  end
+end
+
 # install a customized upstart configuration file
 template "/etc/init/torquebox.conf" do
   source "torquebox.conf.erb"
   owner "root"
   group "root"
   mode "644"
-  variables :torquebox_dir => current, :torquebox_log_dir => node[:torquebox][:log_dir]
+  variables :torquebox_dir => current,
+            :torquebox_log_dir => torquebox[:log_dir],
+            :torquebox_bind_ip => torquebox[:bind_ip]
 end
 
 execute "chown torquebox" do

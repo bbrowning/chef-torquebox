@@ -6,3 +6,4 @@ default[:torquebox][:backstage_gitrepo] = "git://github.com/torquebox/backstage.
 default[:torquebox][:backstage_home] = "/var/www/backstage"
 
 default[:torquebox][:log_dir] = "/var/log/torquebox"
+default[:torquebox][:bind_ip] = "127.0.0.1"
