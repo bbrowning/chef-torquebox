@@ -1,3 +1,5 @@
+include_recipe 'java'
+
 version = node[:torquebox][:version]
 prefix = "/opt/torquebox-#{version}"
 current = "/opt/torquebox-current"
