@@ -50,6 +50,15 @@ execute "torquebox-upstart" do
   })
 end
 
+# install a customized upstart configuration file
+template "/etc/init/torquebox.conf" do
+  source "torquebox.conf.erb"
+  owner "root"
+  group "root"
+  mode "644"
+  variables :torquebox_dir => current, :torquebox_log_dir => node[:torquebox][:log_dir]
+end
+
 execute "chown torquebox" do
   command "chown -R torquebox:torquebox #{prefix}"
 end

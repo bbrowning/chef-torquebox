@@ -4,3 +4,5 @@ default[:torquebox][:checksum] = "c897b9a1a0225be6607fa68a6a952b0e"
 default[:torquebox][:jruby][:opts] = "--1.8"
 default[:torquebox][:backstage_gitrepo] = "git://github.com/torquebox/backstage.git"
 default[:torquebox][:backstage_home] = "/var/www/backstage"
+
+default[:torquebox][:log_dir] = "/var/log/torquebox"
