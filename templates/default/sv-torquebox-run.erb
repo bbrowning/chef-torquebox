@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec chpst -u torquebox <%= @options[:torquebox_dir] %>/jboss/bin/standalone.sh -b <%= @options[:bind_ip] %> 2>&1

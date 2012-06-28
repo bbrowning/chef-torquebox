@@ -5,5 +5,8 @@ default[:torquebox][:jruby][:opts] = "--1.8"
 default[:torquebox][:backstage_gitrepo] = "git://github.com/torquebox/backstage.git"
 default[:torquebox][:backstage_home] = "/var/www/backstage"
 
+default[:torquebox][:torquebox_dir] = "/opt/torquebox-current"
 default[:torquebox][:log_dir] = "/var/log/torquebox"
 default[:torquebox][:bind_ip] = "127.0.0.1"
+
+default[:torquebox][:run_state] = :start

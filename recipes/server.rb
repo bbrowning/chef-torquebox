@@ -1,9 +1,10 @@
 include_recipe 'java'
+include_recipe 'runit'
 
 torquebox = node[:torquebox]
 version = torquebox[:version]
 prefix = "/opt/torquebox-#{version}"
-current = "/opt/torquebox-current"
+current = torquebox[:torquebox_dir]
 
 ENV['TORQUEBOX_HOME'] = current
 ENV['JBOSS_HOME'] = "#{current}/jboss"
@@ -37,20 +38,6 @@ link current do
   to prefix
 end
 
-# install upstart & get it running
-execute "torquebox-upstart" do
-  command "jruby -S rake torquebox:upstart:install"
-  creates "/etc/init/torquebox.conf"
-  cwd current
-  action :run
-  environment ({
-    'TORQUEBOX_HOME'=> current,
-    'JBOSS_HOME'=> "#{current}/jboss",
-    'JRUBY_HOME'=> "#{current}jruby",
-    'PATH' => "#{ENV['PATH']}:#{current}/jruby/bin"
-  })
-end
-
 # Allow bind_ip entries like ["cloud", "local_ipv4"]
 if torquebox[:bind_ip].is_a?(Array)
   torquebox[:bind_ip] = torquebox[:bind_ip].inject(node) do |hash, key|
@@ -58,24 +45,13 @@ if torquebox[:bind_ip].is_a?(Array)
   end
 end
 
-# install a customized upstart configuration file
-template "/etc/init/torquebox.conf" do
-  source "torquebox.conf.erb"
-  owner "root"
-  group "root"
-  mode "644"
-  variables :torquebox_dir => current,
-            :torquebox_log_dir => torquebox[:log_dir],
-            :torquebox_bind_ip => torquebox[:bind_ip]
-end
-
 execute "chown torquebox" do
-  command "chown -R torquebox:torquebox #{prefix}"
+  command "chown -R torquebox:torquebox /usr/local/share/torquebox-#{version}"
 end
 
-service "torquebox" do
-  provider Chef::Provider::Service::Upstart
-  action [:enable, :start]
+runit_service "torquebox" do
+  options   torquebox
+  run_state torquebox[:run_state]
 end
 
 # otherwise bundler won't work in jruby
