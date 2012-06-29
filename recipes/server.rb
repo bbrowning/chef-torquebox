@@ -1,10 +1,9 @@
 include_recipe 'java'
 include_recipe 'runit'
 
-torquebox = node[:torquebox]
-version = torquebox[:version]
+version = node[:torquebox][:version]
 prefix = "/opt/torquebox-#{version}"
-current = torquebox[:torquebox_dir]
+current = node[:torquebox][:torquebox_dir]
 
 ENV['TORQUEBOX_HOME'] = current
 ENV['JBOSS_HOME'] = "#{current}/jboss"
@@ -21,11 +20,11 @@ user "torquebox" do
 end
 
 install_from_release('torquebox') do
-  release_url   torquebox[:url]
+  release_url   node[:torquebox][:url]
   home_dir      prefix
   action        [:install, :install_binaries]
   version       version
-  checksum      torquebox[:checksum]
+  checksum      node[:torquebox][:checksum]
   not_if{ File.exists?(prefix) }
 end
 
@@ -39,8 +38,8 @@ link current do
 end
 
 # Allow bind_ip entries like ["cloud", "local_ipv4"]
-if torquebox[:bind_ip].is_a?(Array)
-  torquebox[:bind_ip] = torquebox[:bind_ip].inject(node) do |hash, key|
+if node[:torquebox][:bind_ip].is_a?(Array)
+  node[:torquebox][:bind_ip] = node[:torquebox][:bind_ip].inject(node) do |hash, key|
     hash[key]
   end
 end
@@ -50,8 +49,8 @@ execute "chown torquebox" do
 end
 
 runit_service "torquebox" do
-  options   torquebox
-  run_state torquebox[:run_state]
+  options   node[:torquebox]
+  run_state node[:torquebox][:run_state]
 end
 
 # otherwise bundler won't work in jruby
