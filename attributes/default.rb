@@ -9,5 +9,7 @@ default[:torquebox][:backstage_home] = "/var/www/backstage"
 default[:torquebox][:torquebox_dir] = "/opt/torquebox-current"
 default[:torquebox][:log_dir] = "/var/log/torquebox"
 default[:torquebox][:bind_ip] = "127.0.0.1"
+default[:torquebox][:server_config] = "standalone.xml"
+default[:torquebox][:clustered] = false
 
 default[:torquebox][:run_state] = :start

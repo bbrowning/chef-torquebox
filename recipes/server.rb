@@ -1,9 +1,11 @@
 include_recipe 'java'
 include_recipe 'runit'
+include_recipe 'silverware'
 
 version = node[:torquebox][:version]
 prefix = "/opt/torquebox-#{version}"
 current = node[:torquebox][:torquebox_dir]
+clustered = node[:torquebox][:clustered]
 
 ENV['TORQUEBOX_HOME'] = current
 ENV['JBOSS_HOME'] = "#{current}/jboss"
@@ -44,6 +46,19 @@ if node[:torquebox][:bind_ip].is_a?(Array)
   end
 end
 
+if clustered
+  node[:torquebox][:peers] = discover_all(:torquebox, :server).map(&:private_ip)
+  node[:torquebox][:server_config] = "standalone-ha.xml"
+end
+
+template "#{current}/jboss/standalone/configuration/standalone-ha.xml" do
+  variables { :options => node[:torquebox] }
+  source "standalone-ha.xml.erb"
+  owner "torquebox"
+  group "torquebox"
+  mode "0644"
+end
+
 execute "chown torquebox" do
   command "chown -R torquebox:torquebox /usr/local/share/torquebox-#{version}"
 end
@@ -59,6 +74,8 @@ runit_service "torquebox" do
   options   node[:torquebox]
   run_state node[:torquebox][:run_state]
 end
+
+announce(:torquebox, :server)
 
 # otherwise bundler won't work in jruby
 gem_package 'jruby-openssl' do

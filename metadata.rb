@@ -8,6 +8,7 @@ version          "0.0.3"
 depends "install_from"
 depends "java"
 depends "runit"
+depends "silverware"
 
 supports "ubuntu"
 supports "debian"
