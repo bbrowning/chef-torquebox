@@ -48,6 +48,13 @@ execute "chown torquebox" do
   command "chown -R torquebox:torquebox /usr/local/share/torquebox-#{version}"
 end
 
+directory node[:torquebox][:log_dir] do
+  owner "torquebox"
+  group "torquebox"
+  mode "0755"
+  action :create
+end
+
 runit_service "torquebox" do
   options   node[:torquebox]
   run_state node[:torquebox][:run_state]
