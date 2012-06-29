@@ -1,3 +1,8 @@
 #!/bin/sh
 
+# Set the ulimit, then prove the new settings got there
+ulimit -H -n 4096
+ulimit -S -n 4096
+chpst -u torquebox %> bash -c 'ulimit -S -a'
+
 exec chpst -u torquebox <%= @options[:torquebox_dir] %>/jboss/bin/standalone.sh -b <%= @options[:bind_ip] %> 2>&1
