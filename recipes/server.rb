@@ -39,7 +39,7 @@ end
 
 # Allow bind_ip entries like ["cloud", "local_ipv4"]
 if node[:torquebox][:bind_ip].is_a?(Array)
-  node[:torquebox][:bind_ip] = node[:torquebox][:bind_ip].inject(node) do |hash, key|
+  node[:torquebox].current_override[:bind_ip] = node[:torquebox][:bind_ip].inject(node) do |hash, key|
     hash[key]
   end
 end
